@@ -1,9 +1,9 @@
 
 resource "aws_s3_bucket" "terraform_backend" {
-  bucket = "terraform-backend-test"
+  bucket = "terraform-backend-test-task"
 
   tags = {
-    Name        = "Terraform backend"
+    Name        = "Terraform backend test bucket"
   }
 }
 
