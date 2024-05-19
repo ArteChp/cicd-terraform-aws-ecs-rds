@@ -46,8 +46,27 @@ variable "vpc_cidr_block" {
   type        = string
 }
 
-variable "subnet_cidr_blocks" {
-  description = "A list of CIDR blocks for the subnets"
+variable "public_subnet_cidr_blocks" {
+  description = "A list of CIDR blocks for public subnets"
   type        = list(string)
 }
 
+variable "private_subnet_cidr_blocks" {
+  description = "A list of CIDR blocks for private subnets"
+  type        = list(string)
+}
+
+variable "name" {
+  description = "The name of the project"
+  type        = string
+}
+
+variable "container_name" {
+  description = "The name of a container"
+  type        = string
+}
+
+variable "container_port" {
+  description = "The port of a container"
+  type        = string
+}
