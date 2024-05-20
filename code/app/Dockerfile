@@ -1,7 +1,7 @@
 FROM public.ecr.aws/docker/library/amazoncorretto:11-alpine
 #https://docs.aws.amazon.com/codeguru/latest/profiler-ug/enabling-the-agent-with-command-line.html
 RUN mkdir -p /opt/target
-RUN apk add libcrypto3=3.0.8-r0 libssl3=3.0.8-r0
+RUN apk add libcrypto3 libssl3
 EXPOSE 8080 5005
 COPY target/aws-proserve-java-greeting.war /opt/target/
 WORKDIR /opt/target
