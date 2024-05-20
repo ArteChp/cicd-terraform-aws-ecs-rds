@@ -13,11 +13,11 @@ locals {
 
   vpc_cidr = var.vpc_cidr_block
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
+  container_name = var.name 
+  container_port = 3000
   tags = {
     Name = var.name
     Environment = var.environment
   }
-  container_name = var.name 
-  container_port = 3000
 
 }
