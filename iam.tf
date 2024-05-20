@@ -39,27 +39,5 @@ data "aws_iam_policy_document" "terraform_backend" {
   }
 }
 
-# data "aws_iam_policy_document" "ecs_role" {
-#   statement {
-#
-#     principals {
-#       type        = "Service"
-#       identifiers = ["ec2.amazonaws.com"]
-#     }
-#
-#     effect = "Allow"
-#
-#     actions = [
-#       "sts:AssumeRole",
-#     ]
-#   }
-# }
-#
-# data "aws_iam_role" "ecs_role" {
-#   name = "ecs-role"
-#   assume_role_policy = data.aws_iam_policy_document.ecs_role.json
-# }
-
-
 
 

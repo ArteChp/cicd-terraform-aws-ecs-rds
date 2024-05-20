@@ -2,12 +2,12 @@ module "alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "~> 9.0"
 
-  name = "ALBTest" 
+  name = var.name 
 
   load_balancer_type = "application"
 
-  vpc_id  = aws_vpc.main_vpc.id
-  subnets = [aws_subnet.public_subnet[0].id, aws_subnet.public_subnet[1].id]  
+  vpc_id  = module.vpc.vpc_id
+  subnets = module.vpc.public_subnets
 
   # For example only
   enable_deletion_protection = false
@@ -24,7 +24,7 @@ module "alb" {
   security_group_egress_rules = {
     all = {
       ip_protocol = "-1"
-      cidr_ipv4   = var.vpc_cidr_block
+      cidr_ipv4   = module.vpc.vpc_cidr_block
     }
   }
 
@@ -42,7 +42,7 @@ module "alb" {
   target_groups = {
     ex_ecs = {
       backend_protocol                  = "HTTP"
-      backend_port                      = var.container_port
+      backend_port                      = local.container_port
       target_type                       = "ip"
       deregistration_delay              = 5
       load_balancing_cross_zone_enabled = true
@@ -65,8 +65,5 @@ module "alb" {
     }
   }
 
-  tags = {
-    Name = var.name
-    Environment = var.environment
-  }
+  tags = local.tags 
 }
