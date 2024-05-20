@@ -1,7 +1,7 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
 
-Description: CFN Template to deploy CodePipeline to build Docker Image of java application and push to ECR and deploy to EKS following DevSecOps Practices
+Description: CFN Template to deploy CodePipeline to build Docker Image of java application and push to ECR and deploy to ECS following DevSecOps Practices
 
 Parameters:
   SourceRepoName:
@@ -11,16 +11,16 @@ Parameters:
     Type: String
     Default: main
     Description: Branch Name
-  EKSClusterName:
+  ECSClusterName:
     Type: String
-    Description: EKS Cluster Name (Not EKS Cluster ID)
-  EKSCodeBuildAppName:
+    Description: ECS Cluster Name 
+  ECSCodeBuildAppName: 
     Type: String
     Default: aws-proserve-java-greeting
     Description: Name of the application
   EnvType:
     Type: String
-    Default: dev
+    Default: development
     Description: Environment Type
   EcrDockerRepository:
     Type: String
@@ -29,12 +29,11 @@ Parameters:
     Type: String
     Default: user@domain.com
     Description: Email Address for Build Notifications
-  EKSWorkerNodeRoleName:
-    Type: CommaDelimitedList
-    Description: Names of existing EKS worker node role(s) you want to add to the newly created Managed Policy of CodeGuru profiler
-  EKSWorkerNodeRoleARN:
+  TerraformVersion:
     Type: String
-    Description: ARN of EKS Worker node role(s) to allow Codeguru profiler Config Agent to send profiling data
+    Default: 1.7.5 
+    Description: Terraform version  
+
 
 Resources:
 
@@ -52,14 +51,6 @@ Resources:
       Type: CodeCommit
       BucketName: !Ref CodeGuruReviewerBucket
 
-  MyProfilingGroup:
-    Type: AWS::CodeGuruProfiler::ProfilingGroup
-    Properties:
-      ProfilingGroupName: "MyProfilingGroup"
-      ComputePlatform: "Default"
-      AgentPermissions:
-        Principals:
-          - !Ref EKSWorkerNodeRoleARN
 
   BuildPipelineSNSTopic:
     Type: AWS::SNS::Topic
@@ -328,7 +319,6 @@ Resources:
               AWS:
                 - !GetAtt [CodePipelineServiceRole,Arn]
                 - !GetAtt [CodeBuildServiceRole,Arn]
-                - !GetAtt [EksCodeBuildkubeRole,Arn]
 
   CodeReviewerBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -349,7 +339,6 @@ Resources:
               AWS:
                 - !GetAtt [CodePipelineServiceRole,Arn]
                 - !GetAtt [CodeBuildServiceRole,Arn]
-                - !GetAtt [EksCodeBuildkubeRole,Arn]
 
   LogBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -375,20 +364,6 @@ Resources:
                 'aws:SourceAccount':
                   - !Sub ${AWS::AccountId}
 
-  CodeGuruProfilerManagedPolicy:
-    Type: 'AWS::IAM::ManagedPolicy'
-    Properties:
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: SendProfilingDataToCodeGuruProfiler
-            Effect: Allow
-            Action:
-              - 'codeguru-profiler:ConfigureAgent'
-              - 'codeguru-profiler:CreateProfilingGroup'
-              - 'codeguru-profiler:PostAgentProfile'
-            Resource: !GetAtt MyProfilingGroup.Arn
-      Roles: !Ref 'EKSWorkerNodeRoleName'
 
   CodePipelineServiceRole:
     Type: AWS::IAM::Role
@@ -549,7 +524,7 @@ Resources:
                   - codeguru-reviewer:Get*
                   - codeguru:Get*
                   - codeguru-reviewer:CreateCodeReview
-              - Resource: !Sub arn:${AWS::Partition}:eks:${AWS::Region}:${AWS::AccountId}:cluster/${EKSClusterName}
+              - Resource: !Sub arn:${AWS::Partition}:eks:${AWS::Region}:${AWS::AccountId}:cluster/${ECSClusterName}
                 Effect: Allow
                 Action:
                   - eks:DescribeNodegroup
@@ -587,30 +562,6 @@ Resources:
 #                Effect: Allow
 #                Action:
 #                  - ecr:GetAuthorizationToken
-  EksCodeBuildkubeRole:
-    Type: AWS::IAM::Role
-    Properties:
-    #  RoleName:
-    #    Fn::Sub: EksCodeBuildkubeRole-${AWS::StackName}
-      Path: /
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              AWS: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/service-role/${CodeBuildServiceRole}
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: codebuild-eks-access
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Resource: !Sub arn:${AWS::Partition}:eks:${AWS::Region}:${AWS::AccountId}:cluster/${EKSClusterName}
-                Effect: Allow
-                Action:
-                  - eks:DescribeNodegroup
-                  - eks:DescribeUpdate
-                  - eks:DescribeCluster
 
   CodeSecScanProject:
     Type: AWS::CodeBuild::Project
@@ -636,8 +587,8 @@ Resources:
             Value: !Ref AWS::AccountId
           - Name: CG_REVIEWER_BUCKET_NAME
             Value: !Ref CodeGuruReviewerBucket
-          - Name: EKS_CODEBUILD_APP_NAME
-            Value: !Ref EKSCodeBuildAppName
+          - Name: ECS_CODEBUILD_APP_NAME
+            Value: !Ref ECSCodeBuildAppName
       Name:
         Fn::Sub: SecScan-${AWS::StackName}
       ServiceRole:
@@ -667,8 +618,6 @@ Resources:
             Value: !Ref EcrDockerRepository
           - Name: AWS_ACCOUNT_ID
             Value: !Ref AWS::AccountId
-          - Name: CG_PROFILER_GROUP_NAME
-            Value: !Ref MyProfilingGroup
       Name:
         Fn::Sub: Build-${AWS::StackName}
       ServiceRole:
@@ -698,14 +647,14 @@ Resources:
             Value: !Ref EcrDockerRepository
           - Name: AWS_ACCOUNT_ID
             Value: !Ref AWS::AccountId
-          - Name: EKS_CLUSTER_NAME
-            Value: !Ref EKSClusterName
-          - Name: EKS_CODEBUILD_ROLE_ARN
-            Value: !GetAtt EksCodeBuildkubeRole.Arn
-          - Name: EKS_CODEBUILD_APP_NAME
-            Value: !Ref EKSCodeBuildAppName
+          - Name: ECS_CLUSTER_NAME
+            Value: !Ref ECSClusterName
+          - Name: ECS_CODEBUILD_APP_NAME
+            Value: !Ref ECSCodeBuildAppName
           - Name: ENV
             Value: !Ref EnvType
+          - Name: TERRAFORM_VERSION
+            Value: !Ref TerraformVersion 
       Name:
         Fn::Sub: Deploy-${AWS::StackName}
       ServiceRole:
@@ -777,7 +726,7 @@ Resources:
                 Version: 1
                 Provider: Manual
               Configuration:
-                CustomData: Approval or Reject the build to be deployed on EKS
+                CustomData: Approval or Reject the build to be deployed on ECS
               InputArtifacts: []
               OutputArtifacts: []
               RunOrder: 4
@@ -808,9 +757,6 @@ Outputs:
   CodeBuildServiceRoleARN:
     Description: ARN of CodeBuildservicerole
     Value: !GetAtt CodeBuildServiceRole.Arn
-  EksCodeBuildkubeRoleARN:
-    Description: ARN of EksCodeBuildkubeRole which will be added in aws-auth configmap for deployment to EKS
-    Value: !GetAtt EksCodeBuildkubeRole.Arn
   CodePipelineURL:
     Description: Codepipeline URL for this stack
     Value:
