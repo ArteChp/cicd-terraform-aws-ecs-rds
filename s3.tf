@@ -1,32 +1,18 @@
+module "backend_s3_bucket" {
+  source = "terraform-aws-modules/s3-bucket/aws"
 
-resource "aws_s3_bucket" "terraform_backend" {
-  bucket = "terraform-backend-test-task"
+  bucket = local.bucket
+  acl    = "private"
 
-  tags = {
-    Name = var.name
+  control_object_ownership = true
+  object_ownership         = "ObjectWriter"
+
+  attach_policy = true
+  policy        = data.aws_iam_policy_document.terraform_backend.json
+
+  versioning = {
+    enabled = true
   }
+  tags = local.tags
 }
 
-resource "aws_s3_bucket_versioning" "terraform_backend_versioning" {
-  bucket = aws_s3_bucket.terraform_backend.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_backend" {
-  bucket = aws_s3_bucket.terraform_backend.id
-
-  rule {
-    bucket_key_enabled = false
-
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-  }
-}
-
-resource "aws_s3_bucket_policy" "terraform_backend" {
-  bucket = aws_s3_bucket.terraform_backend.id
-  policy = data.aws_iam_policy_document.terraform_backend.json
-}

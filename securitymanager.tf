@@ -1,5 +1,5 @@
 data "aws_secretsmanager_secret" "rds_user" {
-  name = "${var.environment}/user/rds"
+  name = "${local.env}/user/rds"
 }
 
 data "aws_secretsmanager_secret_version" "rds_user" {

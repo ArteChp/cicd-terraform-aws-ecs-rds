@@ -1,7 +1,7 @@
 module "ecs" {
   source = "terraform-aws-modules/ecs/aws"
 
-  cluster_name = "ecs-cluster"
+  cluster_name = local.name
 
   cluster_configuration = {
     execute_command_configuration = {
@@ -26,7 +26,7 @@ module "ecs" {
   }
 
   services = {
-    ecsdemo-frontend = {
+    (local.name) = {
       cpu    = 1024
       memory = 4096
 
@@ -37,11 +37,11 @@ module "ecs" {
           cpu       = 512
           memory    = 1024
           essential = true
-          image     = local.container_image 
+          image     = local.container_image
           port_mappings = [
             {
-              name          = local.container_name 
-              containerPort = 8080 
+              name          = local.container_name
+              containerPort = local.container_port
               protocol      = "tcp"
             }
           ]
@@ -49,33 +49,33 @@ module "ecs" {
           # Example image used requires access to write to root filesystem
           readonly_root_filesystem = false
 
-          enable_cloudwatch_logging = true 
-          
+          enable_cloudwatch_logging = true
+
           memory_reservation = 100
         }
       }
 
       service_connect_configuration = {
-        namespace =  aws_service_discovery_http_namespace.default.arn
+        namespace = aws_service_discovery_http_namespace.default.arn
         service = {
           client_alias = {
-            port     = local.container_port 
-            dns_name = local.container_name 
+            port     = local.container_port
+            dns_name = local.container_name
           }
-          port_name      = local.container_name 
-          discovery_name = local.container_name 
+          port_name      = local.container_name
+          discovery_name = local.container_name
         }
       }
 
       load_balancer = {
         service = {
-          target_group_arn = module.alb.target_groups["ex_ecs"].arn 
-          container_name   = local.container_name 
-          container_port   = local.container_port 
+          target_group_arn = module.alb.target_groups["ex_ecs"].arn
+          container_name   = local.container_name
+          container_port   = local.container_port
         }
       }
 
-      subnet_ids = module.vpc.private_subnets 
+      subnet_ids = module.vpc.private_subnets
       security_group_rules = {
         alb_ingress = {
           type                     = "ingress"
@@ -83,7 +83,7 @@ module "ecs" {
           to_port                  = local.container_port
           protocol                 = "tcp"
           description              = "Service port"
-          source_security_group_id = module.alb.security_group_id 
+          source_security_group_id = module.alb.security_group_id
         }
         egress_all = {
           type        = "egress"
@@ -96,5 +96,5 @@ module "ecs" {
     }
   }
 
-  tags = local.tags 
+  tags = local.tags
 }

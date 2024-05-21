@@ -1,6 +1,6 @@
 resource "aws_service_discovery_http_namespace" "default" {
-  name        = var.name
-  description = "CloudMap namespace for ${var.name}"
+  name        = local.name
+  description = "CloudMap namespace for ${local.name}"
 
   tags = local.tags
 }

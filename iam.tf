@@ -1,5 +1,3 @@
-
-
 data "aws_iam_policy_document" "terraform_backend" {
   statement {
 
@@ -15,7 +13,7 @@ data "aws_iam_policy_document" "terraform_backend" {
     ]
 
     resources = [
-      "${aws_s3_bucket.terraform_backend.arn}",
+      "${module.backend_s3_bucket.s3_bucket_arn}",
     ]
   }
   statement {
@@ -33,11 +31,9 @@ data "aws_iam_policy_document" "terraform_backend" {
     ]
 
     resources = [
-      "${aws_s3_bucket.terraform_backend.arn}/production",
-      "${aws_s3_bucket.terraform_backend.arn}/development",
+      "${module.backend_s3_bucket.s3_bucket_arn}/*",
     ]
   }
 }
-
 
 
