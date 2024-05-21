@@ -414,6 +414,16 @@ Resources:
                   - ecs:ListTasks
                   - ecs:RegisterTaskDefinition
                   - ecs:UpdateService
+                  - ecs:DescribeClusters
+                  - ecs:ListClusters
+                  - ecs:ListServices
+                  - ecs:CreateCluster
+                  - ecs:RunTask
+                  - ecs:StartTask
+                  - ecs:StopTask
+                  - ecs:UpdateServicePrimaryTaskSet
+                  - ecs:UpdateTaskSet
+                  - ecs:TagResource
                   - codebuild:StartBuild
                   - codebuild:BatchGetBuilds
                   - iam:PassRole
