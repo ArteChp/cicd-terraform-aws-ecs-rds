@@ -38,11 +38,19 @@ module "ecs" {
           memory    = 1024
           essential = true
           image     = local.container_image
+
           port_mappings = [
             {
               name          = local.container_name
               containerPort = local.container_port
               protocol      = "tcp"
+            }
+          ]
+
+          environment = [
+            {
+              name  = "ENV"
+              value = local.env
             }
           ]
 
