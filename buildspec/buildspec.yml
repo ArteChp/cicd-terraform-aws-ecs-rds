@@ -64,7 +64,7 @@ phases:
         #     continue
         #   fi    
         fi
-      - printf '[{"name":"%s","imageUri":"%s"}]' "$IMAGE_REPO_NAME" "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest" > images.json
+      - printf '[{"name":"csgtest","imageUri":"%s"}]' "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest" > images.json
       - bash -c "if [ /"$CODEBUILD_BUILD_SUCCEEDING/" == /"0/" ]; then exit 1; fi"
 artifacts:
   files: images.json
