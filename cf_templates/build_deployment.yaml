@@ -14,6 +14,9 @@ Parameters:
   ECSClusterName:
     Type: String
     Description: ECS Cluster Name 
+  ECSServiceName:
+    Type: String
+    Description: ECS Service Name
   ECSCodeBuildAppName: 
     Type: String
     Default: aws-proserve-java-greeting
@@ -153,49 +156,6 @@ Resources:
                  "buildLogs": <deep-link>
               }
     DependsOn: [ "CodeBuildImageProject" ]
-
-  CodeDeployImageStateEventRule:
-    Type: "AWS::Events::Rule"
-    Properties:
-      Description: "Rule for sending code deploy image project notifications to SNS topic"
-      EventPattern:
-        source:
-          - "aws.codebuild"
-        detail-type:
-          - "CodeBuild Build State Change"
-        detail:
-          project-name:
-            - !Sub 'Deploy-${AWS::StackName}'
-          build-status:
-            - "FAILED"
-            - "SUCCEEDED"
-            - "IN_PROGRESS"
-            - "STOPPED"
-      State: "ENABLED"
-      Targets:
-        - Arn: !Ref BuildPipelineSNSTopic
-          Id: CodeBuildNotificationTest
-          InputTransformer:
-            InputPathsMap:
-              build-id: "$.detail.build-id"
-              project-name: "$.detail.project-name"
-              build-status: "$.detail.build-status"
-              account: "$.account"
-              region: "$.region"
-              time: "$.time"
-              resourcesarn: "$.resources"
-              deep-link: "$.detail.additional-information.logs.deep-link"
-            InputTemplate: |
-              {
-                 "buildStatus": "Build has reached status of <build-status> at <time>",
-                 "buildID" : <build-id>,
-                 "buildProject": <project-name>,
-                 "buildProjectArn": <resourcesarn>,
-                 "awsAccount": <account>,
-                 "awsRegion": <region>,
-                 "buildLogs": <deep-link>
-              }
-    DependsOn: [ "CodeDeployImageProject" ]
 
   CodePipelineStateEventRule:
     Type: "AWS::Events::Rule"
@@ -395,7 +355,6 @@ Resources:
                   - codecommit:CancelUploadArchive
               - Resource:
                   - !Sub arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/${CodeBuildImageProject}
-                  - !Sub arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/${CodeDeployImageProject}
                   - !Sub arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/${CodeSecScanProject}
                 Effect: Allow
                 Action:
@@ -558,6 +517,18 @@ Resources:
                   - ecr:UploadLayerPart
                   - ecr:CompleteLayerUpload
                   - ecr:GetAuthorizationToken
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                  - ecs:DescribeServices
+                  - ecs:DescribeTaskDefinition
+                  - ecs:DescribeTasks
+                  - ecs:ListTasks
+                  - ecs:RegisterTaskDefinition
+                  - ecs:UpdateService
+                  - codebuild:StartBuild
+                  - codebuild:BatchGetBuilds
+                  - iam:PassRole
 #              - Resource: "*"
 #                Effect: Allow
 #                Action:
@@ -620,43 +591,6 @@ Resources:
             Value: !Ref AWS::AccountId
       Name:
         Fn::Sub: Build-${AWS::StackName}
-      ServiceRole:
-        Fn::GetAtt: [ CodeBuildServiceRole, Arn ]
-
-  CodeDeployImageProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Artifacts:
-        Type: CODEPIPELINE
-      Source:
-        Location:
-          Fn::Sub: https://git-codecommit.${AWS::Region}.amazonaws.com/v1/repos/${SourceRepoName}
-        Type: CODEPIPELINE
-        BuildSpec: "buildspec/buildspec_deploy.yml"
-      TimeoutInMinutes: 30
-      EncryptionKey: alias/aws/s3
-      Environment:
-        ComputeType: BUILD_GENERAL1_SMALL
-        Type: LINUX_CONTAINER
-        Image: "aws/codebuild/standard:5.0"
-        PrivilegedMode: True
-        EnvironmentVariables:
-          - Name: AWS_DEFAULT_REGION
-            Value: !Ref AWS::Region
-          - Name: IMAGE_REPO_NAME
-            Value: !Ref EcrDockerRepository
-          - Name: AWS_ACCOUNT_ID
-            Value: !Ref AWS::AccountId
-          - Name: ECS_CLUSTER_NAME
-            Value: !Ref ECSClusterName
-          - Name: ECS_CODEBUILD_APP_NAME
-            Value: !Ref ECSCodeBuildAppName
-          - Name: ENV
-            Value: !Ref EnvType
-          - Name: TERRAFORM_VERSION
-            Value: !Ref TerraformVersion 
-      Name:
-        Fn::Sub: Deploy-${AWS::StackName}
       ServiceRole:
         Fn::GetAtt: [ CodeBuildServiceRole, Arn ]
 
@@ -734,17 +668,17 @@ Resources:
           Actions:
             - Name: Deploy
               ActionTypeId:
-                Category: Build
+                Category: Deploy
                 Owner: AWS
                 Version: 1
-                Provider: CodeBuild
+                Provider: ECS
               Configuration:
-                ProjectName: !Ref CodeDeployImageProject
+                ClusterName: !Ref ECSClusterName 
+                ServiceName: !Ref ECSServiceName
+                FileName: images.json
               InputArtifacts:
-                - Name: SourceCodeApp
-              OutputArtifacts:
-                - Name: DeployOutput
-              RunOrder: 5
+                - Name: BuildOutput
+              RunOrder: 1
     DependsOn: [ "BuildPipelineSNSTopic", "BuildPipelineSNSSubscription" ]
 
 Outputs:

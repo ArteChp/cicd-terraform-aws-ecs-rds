@@ -37,11 +37,11 @@ module "ecs" {
           cpu       = 512
           memory    = 1024
           essential = true
-          image     = "public.ecr.aws/aws-containers/ecsdemo-frontend:776fd50"
+          image     = local.container_image 
           port_mappings = [
             {
               name          = local.container_name 
-              containerPort = 3000 
+              containerPort = 8080 
               protocol      = "tcp"
             }
           ]

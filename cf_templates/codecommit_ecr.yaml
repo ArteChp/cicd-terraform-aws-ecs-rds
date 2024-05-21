@@ -1,5 +1,5 @@
 Description: >
-  CloudFormation template for creating AWS CodeCommit repository and ECR repository to store cicd java eks code
+  CloudFormation template for creating AWS CodeCommit repository and ECR repository to store cicd java ecs code
 
 Parameters:
   CodeCommitRepositoryName:
@@ -19,7 +19,7 @@ Resources:
   DockerRepo:
     Type: AWS::ECR::Repository
     Properties:
-      ImageTagMutability: IMMUTABLE
+      ImageTagMutability: MUTABLE
       ImageScanningConfiguration:
         ScanOnPush: true
       EncryptionConfiguration:
