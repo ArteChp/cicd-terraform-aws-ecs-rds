@@ -1,7 +1,7 @@
 # Terraform Infrastructure Setup and Automatically build and deploy a Java application to Amazon ECS using a DevSecOps CI/CD pipeline
 
 ### Infrastructure Overview:
-This project showcases an experience in design, manage, and deploy a secure containerized infrastructure using Terraform, AWS, Git, and CI/CD pipelines. The setup includes an ECS cluster for containerized applications, an RDS instance, and a secure location for storing secrets. The infrastructure is designed to be reusable for both development and production environments.
+This project showcases an experience in design, manage, and deploy a secure containerized infrastructure using Terraform, AWS, Git, and CI/CD pipelines. The setup includes an ECS cluster for containerized applications, a RDS instance, and a secure location for storing secrets. The infrastructure is designed to be reusable for both development and production environments.
 
 ### Goals and Objectives:
 
@@ -10,14 +10,14 @@ This project showcases an experience in design, manage, and deploy a secure cont
 - Set up essential components for a secure infrastructure including IAM roles, security groups, ACLs, and load balancers.
 
 #### Version Control:
-- Stored Terraform code and application code in a Git repository.
+- Stored both Terraform code and application code in a Git repository.
 - Application code consists of a simple "Hello, World!!!" webpage with the URL (http://[alb.dns.name]/hello).
 
 #### Automated Deployments:
 - Implemented a CI/CD pipeline using AWS CodePipeline, CodeBuild, CodeDeploy.
-- The pipeline automates deployments based on branch merges:
- - Changes merged into the `main` branch are deployed to the production environment.
- - Changes merged into the `develop` branch are deployed to the testing environment.
+- Automates deployments triggered by branch merges branch merges:
+    - Changes merged into the `main` branch are deployed to the production environment.
+    - Changes merged into the `develop` branch are deployed to the testing environment.
 
 #### Tags: 
 - All resources are tagged with `name:csgtest` for easy identification and management.
@@ -29,7 +29,7 @@ This project showcases an experience in design, manage, and deploy a secure cont
 - Task definitions include environment variables specifying the appropriate environment (development or production).
 
 #### Load balancing:
-- Configured AWS Aplication Load Balancer (ALB) with the module `terraform-aws-modules/alb/aws`.
+- Configured AWS Application Load Balancer (ALB) with the module `terraform-aws-modules/alb/aws`.
 
 #### RDS Instance:
 - Provisioned a secure and scalable RDS instance for database needs with the module `terraform-aws-modules/rds/aws`.
@@ -38,11 +38,11 @@ This project showcases an experience in design, manage, and deploy a secure cont
 - Used AWS Secrets Manager to securely store and manage secrets.
 
 #### Security:
-- Provisioned a secure AWS VPC, private/public/database subnets with the module `terraform-aws-modules/vpc/aws`
+- Provisioned a secure AWS VPC: private, public, and database subnets with the module `terraform-aws-modules/vpc/aws`
 - Implemented robust security measures including IAM roles/policies, security groups, and ACLs with module `terraform-aws-modules/security-group/aws`.
 
 ### Terraform backend:
-- Setup storing the state as a key in Amazon S3 bucket with the module `terraform-aws-modules/s3-bucket/aws`  
+- Configured state storage as a key in Amazon S3 bucket with the module `terraform-aws-modules/s3-bucket/aws`  
 
 ### High Level Architecture of the infrastructure:
 
