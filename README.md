@@ -3,7 +3,7 @@
 ### Infrastructure Overview:
 This project showcases an experience in design, manage, and deploy a secure containerized infrastructure using Terraform, AWS, Git, and CI/CD pipelines. The setup includes an ECS cluster for containerized applications, an RDS instance, and a secure location for storing secrets. The infrastructure is designed to be reusable for both development and production environments.
 
-### Goals and Objectives
+### Goals and Objectives:
 
 #### Reusable Infrastructure:
 - Created reusable Terraform code for both development and production environments.
@@ -16,19 +16,19 @@ This project showcases an experience in design, manage, and deploy a secure cont
 #### Automated Deployments:
 - Implemented a CI/CD pipeline using AWS CodePipeline, CodeBuild, CodeDeploy.
 - The pipeline automates deployments based on branch merges:
--- Changes merged into the `main` branch are deployed to the production environment.
--- Changes merged into the `develop` branch are deployed to the testing environment.
+ - Changes merged into the `main` branch are deployed to the production environment.
+ - Changes merged into the `develop` branch are deployed to the testing environment.
 
-#### Tags 
+#### Tags: 
 - All resources are tagged with `name:csgtest` for easy identification and management.
 
-### Infrastructure Details
+### Infrastructure Details:
 
 #### ECS Cluster with Task Definition:
 - Configured ECS Cluster with the module `terraform-aws-modules/ecs/aws`.
 - Task definitions include environment variables specifying the appropriate environment (development or production).
 
-#### Load balancing
+#### Load balancing:
 - Configured AWS Aplication Load Balancer (ALB) with the module `terraform-aws-modules/alb/aws`.
 
 #### RDS Instance:
@@ -41,7 +41,7 @@ This project showcases an experience in design, manage, and deploy a secure cont
 - Provisioned a secure AWS VPC, private/public/database subnets with the module `terraform-aws-modules/vpc/aws`
 - Implemented robust security measures including IAM roles/policies, security groups, and ACLs with module `terraform-aws-modules/security-group/aws`.
 
-### Terraform backend
+### Terraform backend:
 - Setup storing the state as a key in Amazon S3 bucket with the module `terraform-aws-modules/s3-bucket/aws`  
 
 ### High Level Architecture of the infrastructure:
