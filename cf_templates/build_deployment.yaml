@@ -6,6 +6,7 @@ Description: CFN Template to deploy CodePipeline to build Docker Image of java a
 Parameters:
   SourceRepoName:
     Type: String
+    Default: csgtest-cicd-terraform-aws-ecs-rds 
     Description: AWS CodeCommit RepoName where code resides
   CodeBranchName:
     Type: String
@@ -13,9 +14,11 @@ Parameters:
     Description: Branch Name
   ECSClusterName:
     Type: String
+    Default: csgtest-production 
     Description: ECS Cluster Name 
   ECSServiceName:
     Type: String
+    Default: csgtest-production 
     Description: ECS Service Name
   ECSCodeBuildAppName: 
     Type: String
@@ -23,10 +26,11 @@ Parameters:
     Description: Name of the application
   EnvType:
     Type: String
-    Default: development
+    Default: production 
     Description: Environment Type
   EcrDockerRepository:
     Type: String
+    Default: csgtest-cicd-terraform-aws-ecs-rds  
     Description: ECR Docker Repositry Name
   EmailRecipient:
     Type: String
@@ -44,7 +48,7 @@ Resources:
     Type: 'AWS::SecurityHub::Hub'
     Properties:
       Tags:
-        Name: MySecurityHub
+        Name: !Sub MySecurityHub
         Purpose: Security
 
   SourceRepositoryAssociation:
