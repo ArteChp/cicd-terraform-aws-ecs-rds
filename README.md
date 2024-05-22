@@ -46,7 +46,7 @@ This project showcases an experience in design, manage, and deploy a secure cont
 
 ### High Level Architecture of the infrastructure:
 
-![Alt text](./infra-diagram.jpg?raw=true "CI/CD Architecture")
+![Alt text](./infra-diagram.png?raw=true "Infrastructure Architecture")
 
 ### CI/CD Overview:
 Created a continuous integration and continuous delivery (CI/CD) pipeline that automatically builds and deploys a Java application to an Amazon Elastic Container Service (Amazon ECS) cluster on the Amazon Web Services (AWS) Cloud. This pattern uses a greeting application developed with a Spring Boot Java framework and that uses Apache Maven.
@@ -57,7 +57,7 @@ It also emphasizes on how to monitor and manage the entire lifecycle of a Java a
 
 ### High Level Architecture of CI/CD:
 
-![Alt text](./cicd-diagram.jpg?raw=true "CI/CD Architecture")
+![Alt text](./cicd-diagram.png?raw=true "CI/CD Architecture")
 
 The diagram shows the following workflow:
 
@@ -83,7 +83,7 @@ The diagram shows the following workflow:
 
 11. After the continuous integration phases are complete, CodePipeline enters the deployment phase (continuous delivery).
 
-12. The Docker image is deployed to Amazon ECS as a container workload (Task) using AWS Codebuild. 
+12. The Docker image is deployed to Amazon ECS as a container workload (Task) using AWS CodeDeploy. 
 
 ### Code Structure:
 
