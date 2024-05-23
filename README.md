@@ -15,7 +15,7 @@ This project showcases an experience in design, manage, and deploy a secure cont
 
 #### Automated Deployments:
 - Implemented a CI/CD pipeline using AWS CodePipeline, CodeBuild, CodeDeploy.
-- Automates deployments triggered by branch merges branch merges:
+- Automates deployments triggered by branch merges:
     - Changes merged into the `main` branch are deployed to the production environment.
     - Changes merged into the `develop` branch are deployed to the testing environment.
 
