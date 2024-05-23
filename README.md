@@ -134,7 +134,7 @@ The diagram shows the following workflow:
 ```
 ### Code Overview:
 
-1) **Terraform** infrastructure files: **.tf,.tfvars**
+1) **.tf,.tfvars**: **Terraform** infrastructure files 
 ```bash
 ├── alb.tf 
 ├── backend.tf 
