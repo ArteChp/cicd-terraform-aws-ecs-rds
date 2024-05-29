@@ -61,11 +61,11 @@ It also emphasizes on how to monitor and manage the entire lifecycle of a Java a
 
 The diagram shows the following workflow:
 
-1. Developer will update the Java application code in the base branch of the AWS CodeCommit repository, creating a Pull Reqeust (PR).
+1. Developer will update the Java application code in the main/develop branch of the AWS CodeCommit repository.
 
-2. Amazon CodeGuru Reviewer automatically reviews the code as soon as a PR is submitted and does a analysis of java code as per the best practices and gives recommendations to users.
+2. Amazon CodeGuru Reviewer automatically reviews the code if a Pull Request is submitted and does a analysis of java code as per the best practices and gives recommendations to users.
 
-3. Once the PR is merged to main/develop branch, a AWS CloudWatch event is created.
+3. Once the code is pushed to the repository, a AWS CloudWatch event is created.
 
 4. This AWS CloudWatch event triggers the AWS CodePipeline.
 
