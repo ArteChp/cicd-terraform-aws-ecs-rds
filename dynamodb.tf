@@ -1,3 +1,4 @@
+
 module "dynamodb_table" {
   source = "terraform-aws-modules/dynamodb-table/aws"
 
@@ -11,3 +12,9 @@ module "dynamodb_table" {
     }
   ]
 }
+
+import {
+  to = module.dynamodb_table.aws_dynamodb_table.this[0]
+  id = local.dynamodb_table
+}
+
