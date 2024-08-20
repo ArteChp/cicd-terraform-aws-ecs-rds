@@ -1,3 +1,5 @@
-region = "us-west-2"
-key    = "terraform.tfstate"
-bucket = "terraform-backend-csgtest-production"
+region               = "us-west-2"
+key                  = "terraform.tfstate"
+workspace_key_prefix = "workspaces"
+bucket               = "terraform-backend-csgtest"
+dynamodb_table       = "terraform-state-lock-csgtest"
