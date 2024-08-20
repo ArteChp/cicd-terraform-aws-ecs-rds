@@ -10,6 +10,4 @@ module "dynamodb_table" {
       type = "S"
     }
   ]
-
-  tags = local.tags
 }

@@ -13,6 +13,5 @@ module "backend_s3_bucket" {
   versioning = {
     enabled = true
   }
-  tags = local.tags
 }
 
