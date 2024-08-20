@@ -17,7 +17,8 @@ locals {
   container_name  = var.name
   container_port  = 8080
   container_image = "204848234318.dkr.ecr.us-west-2.amazonaws.com/csgtest-cicd-terraform-aws-ecs-rds:latest"
-  bucket          = "terraform-backend-${local.name}"
+  bucket          = "terraform-backend-${var.name}"
+  dynamodb_table  = "terraform-state-lock-${var.name}"
   db_name         = jsondecode(data.aws_secretsmanager_secret_version.rds_user.secret_string)["dbname"]
   db_user         = jsondecode(data.aws_secretsmanager_secret_version.rds_user.secret_string)["username"]
   db_port         = jsondecode(data.aws_secretsmanager_secret_version.rds_user.secret_string)["port"]
